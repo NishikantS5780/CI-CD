@@ -51,5 +51,3 @@ jobs:
             sudo systemctl restart gunicorn.service
           EOF
 
-      - name: Complete Deployment
-        run: echo "Deployment Completed"
