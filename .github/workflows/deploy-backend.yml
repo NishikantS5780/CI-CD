@@ -1,5 +1,5 @@
 name: Deploy to Google Compute Engine
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+run-name: Deploy Backend
 on:
   push:
     branches:
