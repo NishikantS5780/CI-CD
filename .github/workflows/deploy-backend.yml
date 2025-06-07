@@ -33,7 +33,7 @@ jobs:
         run: |
           ssh ${{ secrets.GCE_USER }}@${{ secrets.GCE_HOST }} << "EOF"
             cd /home/${{ secrets.GCE_USER }}/backend
-            pip install -r requirements.txt
+            ./venv/bin/pip install -r requirements.txt
             echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> ./.env
             echo "URL=${{ secrets.FRONTEND_URL }}" >> ./.env
             echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}" >> ./.env
