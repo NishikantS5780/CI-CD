@@ -27,5 +27,7 @@ class Settings:
         os.getenv("OTP_EXPIRY_DURATION_SECONDS", "300")
     )
 
+    GCS_BUCKET_NAME: str = os.getenv("GCS_BUCKET_NAME")
+
 
 settings = Settings()

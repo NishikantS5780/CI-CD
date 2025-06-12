@@ -78,7 +78,7 @@ The questions should be:
 5. Natural and conversational
 6. Similar in style and focus to the custom questions provided
 
-Current question types: {', '.join(question_types)}
+Question types: {', '.join(question_types)}
 Maximum questions to generate: {len(question_types)}
 
 Job Description:
@@ -98,15 +98,16 @@ Instructions for Question Generation:
 5. For the first question, start with a brief greeting and then ask your first question. Format it as: "Hello! [Greeting message]. [Question]"
 
 The questions should be based on the previous conversation and maintain a natural flow.
-If no resume text or job description is provided, generate a basic question about the candidate's experience.
 
-Return the questions as a JSON array of objects with "question" and "type" fields."""
+If no resume text or job description is provided, generate questions according to the given question types.
+
+Return the questions as a JSON array of objects with "question" and "type" fields. Make sure to return array in correct JSON format. Do not return any other text or explanation."""
 
     response = await openai.client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": "Generate the interview questions, making sure to include enhanced versions of the custom questions provided."},
+            {"role": "user", "content": "Generate the interview questions, making sure to include enhanced versions of the custom questions provided. And return a correct JSON array of objects with 'question' and 'type' fields. And also give only specified number and type of questions."},
         ],
         temperature=0.7,
         max_tokens=1000,

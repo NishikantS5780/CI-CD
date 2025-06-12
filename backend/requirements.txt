@@ -19,3 +19,5 @@ fpdf
 aiohttp
 aiodns
 websockets
+
+google-cloud-storage
