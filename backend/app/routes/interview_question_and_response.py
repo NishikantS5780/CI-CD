@@ -76,6 +76,8 @@ The questions should be:
 3. Progressive in difficulty
 4. Natural and conversational
 5. Similar in style and focus to the custom questions provided
+6. Ask more on the tech stack of the job
+7. Less on experience and more on required skills- Ask tricky questions and descriptive questions on tech stack.
 
 Current question types: {', '.join(question_types)}
 Maximum questions to generate: {len(question_types)}
