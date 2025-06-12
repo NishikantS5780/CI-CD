@@ -60,11 +60,11 @@ async def generate_questions(
         "technical",
         "technical",
         "technical",
+        "technical",
+        "technical",
+        "technical",
         "behavioral",
-        "behavioral",
-        "problem_solving",
-        "problem_solving",
-        "problem_solving",
+        "problem_solving"
     ]
 
     system_prompt = f"""You are an expert technical interviewer for the position of {job.title}.
@@ -72,11 +72,10 @@ Your task is to generate interview questions based on the job description, candi
 
 The questions should be:
 1. Clear and concise
-2. Relevant to the position
-3. Based on the candidate's experience from their resume
-4. Progressive in difficulty
-5. Natural and conversational
-6. Similar in style and focus to the custom questions provided
+2. Highly technical and focused on job-specific skills
+3. Progressive in difficulty
+4. Natural and conversational
+5. Similar in style and focus to the custom questions provided
 
 Current question types: {', '.join(question_types)}
 Maximum questions to generate: {len(question_types)}
@@ -96,6 +95,11 @@ Instructions for Question Generation:
 3. Then generate additional questions that follow the same style and focus as the custom questions
 4. Ensure all questions maintain a natural conversation flow
 5. For the first question, start with a brief greeting and then ask your first question. Format it as: "Hello! [Greeting message]. [Question]"
+6. Focus on technical depth and problem-solving abilities
+7. Include specific technical scenarios and challenges relevant to the role
+8. Ask about implementation details and technical decision-making
+9. Include questions about system design, architecture, and technical trade-offs
+10. Ensure questions test both theoretical knowledge and practical experience
 
 The questions should be based on the previous conversation and maintain a natural flow.
 If no resume text or job description is provided, generate a basic question about the candidate's experience.
