@@ -1436,6 +1436,33 @@ export default function VideoInterview() {
                         }
                         className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
                       />
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          const skipResponse = "Next question please";
+                          addUserMessage(skipResponse);
+                          setHasRecordedCurrentQuestion(true);
+                          setCurrentResponse(skipResponse);
+                          interviewAPI.submitTextResponse(currentQuestionIndex, skipResponse)
+                            .then(() => {
+                              console.log("Skip response submitted successfully");
+                            })
+                            .catch((error) => {
+                              console.error("Failed to submit skip response:", error);
+                              toast.error("Failed to submit skip response");
+                            });
+                        }}
+                        disabled={
+                          !isInterviewActive ||
+                          isAiSpeaking ||
+                          isAiTyping ||
+                          hasRecordedCurrentQuestion ||
+                          isProcessingResponse
+                        }
+                        className="bg-background/80 backdrop-blur-sm hover:bg-background/90"
+                      >
+                        Skip Question
+                      </Button>
                       {hasRecordedCurrentQuestion &&
                         currentQuestionIndex <= interviewFlow.length && (
                           <Button
