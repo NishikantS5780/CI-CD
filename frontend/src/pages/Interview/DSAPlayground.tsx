@@ -77,13 +77,12 @@ const DSAPlayground = () => {
 
   React.useEffect(() => {
     const socket = new WebSocket(
-      import.meta.env.VITE_WS_BASE_URL +
+      import.meta.env.VITE_DSA_WS_BASE_URL +
         "?i_token=" +
         localStorage.getItem("i_token")
     );
 
     socket.onopen = () => {
-      socket.send(JSON.stringify({ hi: "hi" }));
       console.log("Websocket connection established");
     };
     socket.onmessage = (e) => {

@@ -210,9 +210,9 @@ const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
+                {/* <DropdownMenuItem asChild>
                   <Link to="/dashboard/profile">Profile</Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuItem
                   onClick={handleLogout}
                   className="text-destructive"
