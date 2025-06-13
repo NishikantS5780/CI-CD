@@ -1314,29 +1314,9 @@ const NewJob = () => {
                                       rows={4}
                                     />
                                   </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    disabled
-                                    className="text-destructive"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
                                 </div>
                               )
                             )}
-                          </div>
-
-                          <div className="flex justify-end">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {}} // IMPORTANT: TO BE HANDLED
-                              className="text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Question
-                            </Button>
                           </div>
                         </div>
                       </Card>
@@ -1495,18 +1475,6 @@ const NewJob = () => {
                           onClick={handleSaveTestCase}
                         >
                           Save Test Case
-                        </Button>
-                      </div>
-
-                      <div className="flex justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {}} // IMPORTANT: TO BE HANDLED
-                          className="text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete Question
                         </Button>
                       </div>
                     </div>
