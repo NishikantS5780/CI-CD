@@ -499,6 +499,7 @@ const InterviewDetail = () => {
                 <a
                   className="flex items-center gap-2"
                   href={interview.resume_url}
+                  target="_blank"
                 >
                   <FileText className="h-4 w-4" />
                   Download Resume
@@ -791,36 +792,23 @@ const InterviewDetail = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {interview.screenshot_urls.map(
                     (url: string, index: number) => {
-                      // Clean up the URL by removing any 'None' segments and ensuring proper path
-                      const cleanUrl = url
-                        .replace(/\/None\//g, "/")
-                        .replace(/\/+/g, "/");
-                      // Extract just the filename from the URL
-                      const filename = cleanUrl.split("/").pop();
-                      // Construct the full URL using the API base URL, ensuring no double /api
-                      const baseUrl =
-                        import.meta.env.VITE_API_BASE_URL ||
-                        "http://localhost:8000";
-                      const imageUrl = `${baseUrl}/uploads/screenshot/${interview.id}/${filename}`;
-
                       return (
                         <div key={index} className="relative group">
                           <img
-                            src={imageUrl}
+                            src={url}
                             alt={`Interview screenshot ${index + 1}`}
                             className="w-full h-48 object-cover rounded-lg"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.src =
                                 "https://placehold.co/400x300?text=Image+Not+Found";
-                              console.error("Failed to load image:", imageUrl);
                             }}
                           />
                           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                             <Button
                               variant="secondary"
                               size="sm"
-                              onClick={() => window.open(imageUrl, "_blank")}
+                              onClick={() => window.open(url, "_blank")}
                             >
                               View Full Size
                             </Button>
