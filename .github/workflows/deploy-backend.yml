@@ -21,6 +21,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.GCE_SSH_PUBLIC_KEY }}" > ~/.ssh/authorized_keys
+          chmod 600 ~/.ssh/authorized_keys
           ssh-keyscan -H ${{ secrets.GCE_HOST }} > ~/.ssh/known_hosts
 
       - name: Sync code to GCE
