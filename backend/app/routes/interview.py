@@ -669,7 +669,7 @@ async def generate_feedback(
     pdf.add_page()
     full_width = pdf.w - pdf.l_margin - pdf.r_margin
     half_width = (pdf.w - pdf.l_margin - pdf.r_margin) * 0.5
-    pdf.set_font("Arial", size=18)
+    pdf.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
     pdf.set_text_color(0, 0, 200)
     pdf.cell(full_width, 21.6, "Candidate Interview Report", border=0, ln=1, align="C")
     pdf.ln(18)
