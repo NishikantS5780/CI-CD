@@ -368,7 +368,7 @@ const NewJob = () => {
         salary_min: jobData.salary_min ? Number(jobData.salary_min) : null,
         salary_max: jobData.salary_max ? Number(jobData.salary_max) : null,
       };
-      
+
       const validationResult = jobFormSchema.safeParse(dataToValidate);
       if (!validationResult.success) {
         const newErrors: Record<string, string> = {};
@@ -1049,7 +1049,11 @@ const NewJob = () => {
                               type="number"
                               min="0"
                               placeholder="e.g. 60000"
-                              value={typeof jobData.salary_min === 'string' ? jobData.salary_min : ''}
+                              value={
+                                typeof jobData.salary_min === "string"
+                                  ? jobData.salary_min
+                                  : ""
+                              }
                               onChange={(e) => {
                                 const value = e.target.value;
                                 if (value === "" || /^\d+$/.test(value)) {
@@ -1066,7 +1070,11 @@ const NewJob = () => {
                               type="number"
                               min="0"
                               placeholder="e.g. 80000"
-                              value={typeof jobData.salary_max === 'string' ? jobData.salary_max : ''}
+                              value={
+                                typeof jobData.salary_max === "string"
+                                  ? jobData.salary_max
+                                  : ""
+                              }
                               onChange={(e) => {
                                 const value = e.target.value;
                                 if (value === "" || /^\d+$/.test(value)) {
@@ -1481,15 +1489,13 @@ const NewJob = () => {
                             />
                           </div>
                         </div>
-                        <div className="flex w-full justify-end items-center">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleSaveTestCase}
-                          >
-                            Save Test Case
-                          </Button>
-                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleSaveTestCase}
+                        >
+                          Save Test Case
+                        </Button>
                       </div>
 
                       <div className="flex justify-end">
