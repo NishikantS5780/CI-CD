@@ -771,9 +771,9 @@ async def generate_feedback(
     pdf.set_font("Arial", size=14)
     pdf.multi_cell(full_width, 16.8, safe_text(str(data["resume_match_feedback"])), border=0)
 
-    # Save PDF to a BytesIO buffer
-    pdf_buffer = io.BytesIO()
-    pdf.output(pdf_buffer)
+    # Save PDF to a BytesIO buffer (correct way)
+    pdf_bytes = pdf.output(dest='S').encode('latin-1')
+    pdf_buffer = io.BytesIO(pdf_bytes)
     pdf_buffer.seek(0)
 
     # Upload PDF buffer to GCS
