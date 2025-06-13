@@ -18,8 +18,6 @@ jobs:
       
       - name: Set up SSH
         run: |
-          echo "${{secrets.GCE_USER}}"
-          echo "${{secrets.GCE_HOST}}"
           mkdir -p ~/.ssh
           echo "${{ secrets.GCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
@@ -29,7 +27,7 @@ jobs:
         working-directory: ./backend
         run: |
           rsync -az --delete \
-            -e "ssh -i ~/.ssh/id_rsa" \
+            -e "ssh -v -i ~/.ssh/id_rsa" \
             ./ ${{ secrets.GCE_USER }}@${{ secrets.GCE_HOST }}:/home/${{ secrets.GCE_USER }}/backend/
       
       - name: Install dependencies and restart backend
