@@ -669,7 +669,7 @@ async def generate_feedback(
     pdf.add_page()
     full_width = pdf.w - pdf.l_margin - pdf.r_margin
     half_width = (pdf.w - pdf.l_margin - pdf.r_margin) * 0.5
-    pdf.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
+    pdf.set_font("Arial", size=18)
     pdf.set_text_color(0, 0, 200)
     pdf.cell(full_width, 21.6, "Candidate Interview Report", border=0, ln=1, align="C")
     pdf.ln(18)
@@ -783,7 +783,15 @@ async def generate_feedback(
     pdf.ln(8)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=14)
-    pdf.multi_cell(full_width, 16.8, interview_data["feedback_for_candidate"], border=0)
+    pdf.multi_cell(
+        full_width,
+        16.8,
+        interview_data["feedback_for_candidate"]
+        .replace("’", "'")
+        .replace("–", "-")
+        .replace("—", "--"),
+        border=0,
+    )
     pdf.ln(14)
     pdf.set_font("Arial", size=16)
     pdf.set_text_color(0, 0, 200)
@@ -791,7 +799,15 @@ async def generate_feedback(
     pdf.ln(8)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=14)
-    pdf.multi_cell(full_width, 16.8, str(data["resume_match_feedback"]), border=0)
+    pdf.multi_cell(
+        full_width,
+        16.8,
+        str(data["resume_match_feedback"])
+        .replace("’", "'")
+        .replace("–", "-")
+        .replace("—", "--"),
+        border=0,
+    )
 
     # Save PDF to a BytesIO buffer
     pdf_buffer = io.BytesIO()
