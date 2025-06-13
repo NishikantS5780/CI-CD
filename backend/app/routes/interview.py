@@ -663,50 +663,52 @@ async def generate_feedback(
         "report",
         f"{interview_id}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
     )
+
     from fpdf import FPDF
 
     pdf = FPDF(unit="pt")
     pdf.add_page()
+    # Replace non-latin-1 characters with closest ASCII equivalents or remove them
+    import unicodedata
+    def safe_text(text):
+        if not isinstance(text, str):
+            text = str(text)
+        return unicodedata.normalize('NFKD', text).encode('latin-1', 'ignore').decode('latin-1')
+
+    pdf.set_font("Arial", size=18)
     full_width = pdf.w - pdf.l_margin - pdf.r_margin
     half_width = (pdf.w - pdf.l_margin - pdf.r_margin) * 0.5
     pdf.set_font("Arial", size=18)
     pdf.set_text_color(0, 0, 200)
-    pdf.cell(full_width, 21.6, "Candidate Interview Report", border=0, ln=1, align="C")
+    pdf.cell(full_width, 21.6, safe_text("Candidate Interview Report"), border=0, ln=1, align="C")
     pdf.ln(18)
     pdf.set_font("Arial", size=16)
-    pdf.cell(
-        full_width,
-        19.2,
-        f"{data['first_name']} {data['last_name']}",
-        border=0,
-        ln=1,
-        align="C",
-    )
+    pdf.cell(full_width, 19.2, safe_text(f"{data['first_name']} {data['last_name']}"), border=0, ln=1, align="C")
     pdf.ln(16)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=14)
-    pdf.cell(full_width, 16.8, f"Position: {data['title']}", border=0, ln=1, align="C")
+    pdf.cell(full_width, 16.8, safe_text(f"Position: {data['title']}"), border=0, ln=1, align="C")
     pdf.ln(14)
-    pdf.cell(full_width, 16.8, f"Date: {data['created_at']}", border=0, ln=1, align="C")
+    pdf.cell(full_width, 16.8, safe_text(f"Date: {data['created_at']}"), border=0, ln=1, align="C")
     pdf.ln(14)
     pdf.set_font("Arial", size=16)
     pdf.set_text_color(0, 0, 200)
-    pdf.cell(full_width, 19.2, "Candidate Information", border=0, ln=1)
+    pdf.cell(full_width, 19.2, safe_text("Candidate Information"), border=0, ln=1)
     pdf.ln(8)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=14)
-    pdf.cell(half_width, 16.8, "Email", border=1)
-    pdf.cell(half_width, 16.8, data["email"], border=1, ln=1)
-    pdf.cell(half_width, 16.8, "Phone", border=1)
-    pdf.cell(half_width, 16.8, data["phone"], border=1, ln=1)
-    pdf.cell(half_width, 16.8, "Location", border=1)
-    pdf.cell(half_width, 16.8, data["location"], border=1, ln=1)
-    pdf.cell(half_width, 16.8, "Education", border=1)
-    pdf.cell(half_width, 16.8, data["education"], border=1, ln=1)
-    pdf.cell(half_width, 16.8, "Experience", border=1)
-    pdf.cell(half_width, 16.8, f"{data['work_experience']} years", border=1, ln=1)
-    pdf.cell(half_width, 16.8, "Skills", border=1)
-    pdf.cell(half_width, 16.8, data["skills"], border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Email"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(data["email"]), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Phone"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(data["phone"]), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Location"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(data["location"]), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Education"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(data["education"]), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Experience"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(f"{data['work_experience']} years"), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Skills"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(data["skills"]), border=1, ln=1)
     pdf.ln(14)
     # pdf.set_font("Arial", size=16)
     # pdf.set_text_color(0, 0, 200)
@@ -723,46 +725,22 @@ async def generate_feedback(
     # pdf.ln(14)
     pdf.set_font("Arial", size=16)
     pdf.set_text_color(0, 0, 200)
-    pdf.cell(full_width, 19.2, "Assessment Results", border=0, ln=1)
+    pdf.cell(full_width, 19.2, safe_text("Assessment Results"), border=0, ln=1)
     pdf.ln(8)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=14)
-    pdf.cell(half_width, 16.8, "Overall Score", border=1)
-    pdf.cell(half_width, 16.8, str(interview_data["score"]) + "%", border=1, ln=1)
-    pdf.cell(half_width, 16.8, "Resume match Score", border=1)
-    pdf.cell(half_width, 16.8, str(data["resume_match_score"]) + "%", border=1, ln=1)
-    pdf.cell(half_width, 16.8, "Technical Score", border=1)
-    pdf.cell(
-        half_width,
-        16.8,
-        str(interview_data["scoreBreakdown"]["technicalSkills"]) + "%",
-        border=1,
-        ln=1,
-    )
-    pdf.cell(half_width, 16.8, "Communication Score", border=1)
-    pdf.cell(
-        half_width,
-        16.8,
-        str(interview_data["scoreBreakdown"]["communication"]) + "%",
-        border=1,
-        ln=1,
-    )
-    pdf.cell(half_width, 16.8, "Problem solving Score", border=1)
-    pdf.cell(
-        half_width,
-        16.8,
-        str(interview_data["scoreBreakdown"]["problemSolving"]) + "%",
-        border=1,
-        ln=1,
-    )
-    pdf.cell(half_width, 16.8, "Cultural Fit Score", border=1)
-    pdf.cell(
-        half_width,
-        16.8,
-        str(interview_data["scoreBreakdown"]["culturalFit"]) + "%",
-        border=1,
-        ln=1,
-    )
+    pdf.cell(half_width, 16.8, safe_text("Overall Score"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(str(interview_data["score"]) + "%"), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Resume match Score"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(str(data["resume_match_score"]) + "%"), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Technical Score"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(str(interview_data["scoreBreakdown"]["technicalSkills"]) + "%"), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Communication Score"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(str(interview_data["scoreBreakdown"]["communication"]) + "%"), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Problem solving Score"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(str(interview_data["scoreBreakdown"]["problemSolving"]) + "%"), border=1, ln=1)
+    pdf.cell(half_width, 16.8, safe_text("Cultural Fit Score"), border=1)
+    pdf.cell(half_width, 16.8, safe_text(str(interview_data["scoreBreakdown"]["culturalFit"]) + "%"), border=1, ln=1)
     pdf.ln(14)
     # pdf.set_font("Arial", size=16)
     # pdf.set_text_color(0, 0, 200)
@@ -779,35 +757,19 @@ async def generate_feedback(
     # pdf.ln(14)
     pdf.set_font("Arial", size=16)
     pdf.set_text_color(0, 0, 200)
-    pdf.cell(full_width, 19.2, "Feedback", border=0, ln=1)
+    pdf.cell(full_width, 19.2, safe_text("Feedback"), border=0, ln=1)
     pdf.ln(8)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=14)
-    pdf.multi_cell(
-        full_width,
-        16.8,
-        interview_data["feedback_for_candidate"]
-        .replace("’", "'")
-        .replace("–", "-")
-        .replace("—", "--"),
-        border=0,
-    )
+    pdf.multi_cell(full_width, 16.8, safe_text(interview_data["feedback_for_candidate"]), border=0)
     pdf.ln(14)
     pdf.set_font("Arial", size=16)
     pdf.set_text_color(0, 0, 200)
-    pdf.cell(full_width, 19.2, "Resume match Feedback", border=0, ln=1)
+    pdf.cell(full_width, 19.2, safe_text("Resume match Feedback"), border=0, ln=1)
     pdf.ln(8)
     pdf.set_text_color(0, 0, 0)
     pdf.set_font("Arial", size=14)
-    pdf.multi_cell(
-        full_width,
-        16.8,
-        str(data["resume_match_feedback"])
-        .replace("’", "'")
-        .replace("–", "-")
-        .replace("—", "--"),
-        border=0,
-    )
+    pdf.multi_cell(full_width, 16.8, safe_text(str(data["resume_match_feedback"])), border=0)
 
     # Save PDF to a BytesIO buffer
     pdf_buffer = io.BytesIO()
