@@ -35,6 +35,7 @@ from app.models import (
     Recruiter,
 )
 from app.services import brevo
+from app.services import gcs
 from app.utils import jwt
 from app.dependencies.authorization import authorize_candidate, authorize_recruiter
 
@@ -161,12 +162,16 @@ async def get_interview_recruiter_view(
             f"{config.settings.URL}/uploads/interview_video/{int(id)}/video.m3u8"
         )
 
-    interview["screenshot_urls"] = []
-    if os.path.exists(f"uploads/screenshot/{int(id)}/"):
-        for f in os.listdir(f"uploads/screenshot/{int(id)}"):
-            interview["screenshot_urls"].append(
-                f"{config.settings.URL}/uploads/screenshot/{int(id)}/{f}"
-            )
+    from app.services import gcs as gcs_service
+
+    gcs_bucket = config.settings.GCS_BUCKET_NAME
+    gcs_prefix = f"screenshots/{int(id)}/"
+    screenshot_blob_names = gcs_service.list_blobs_with_prefix(gcs_bucket, gcs_prefix)
+    screenshot_urls = [
+        gcs_service.get_blob_public_url(gcs_bucket, blob_name)
+        for blob_name in screenshot_blob_names
+    ]
+    interview["screenshot_urls"] = screenshot_urls
     return interview
 
 
@@ -270,20 +275,22 @@ async def upload_resume(
             status_code=status.HTTP_400_BAD_REQUEST, detail="No file provided"
         )
 
-    os.makedirs("uploads/resume", exist_ok=True)
+    # Upload file to GCS instead of local storage
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    file_path = os.path.join(
-        "uploads", "resume", f"{interview_id}_{timestamp}_{file.filename}"
-    )
+    gcs_bucket = config.settings.GCS_BUCKET_NAME  # Ensure this is set in your config
+    gcs_blob_name = f"resumes/{interview_id}_{timestamp}_{file.filename}"
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # Upload to GCS using the helper function, passing the file object
+    file.file.seek(0)
+    gcs_url = gcs.upload_file_to_gcs(
+        gcs_bucket, gcs_blob_name, file.file, content_type=file.content_type
+    )
 
     stmt = (
         update(Interview)
         .where(Interview.id == interview_id)
         .values(
-            resume_url=file_path,
+            resume_url=gcs_url,
         )
         .returning(
             Interview.id,
@@ -379,23 +386,6 @@ async def verify_email(
     interview = result.scalars().all()[0]
 
     return interview
-
-
-@router.get("/resume")
-async def get_resume(
-    interview_id: str,
-    recruiter_id=Depends(authorize_recruiter),
-    db: Session = Depends(database.get_db),
-):
-    stmt = select(Interview.resume_url).where(Interview.id == int(interview_id))
-    interview = db.execute(stmt).mappings().one()
-
-    file_path = interview["resume_url"]
-
-    if not file_path:
-        return {"message": "No content"}
-
-    return FileResponse(file_path, headers={"Content-Type": "application/pdf"})
 
 
 @router.put("")
@@ -803,7 +793,17 @@ async def generate_feedback(
     pdf.set_font("Arial", size=14)
     pdf.multi_cell(full_width, 16.8, str(data["resume_match_feedback"]), border=0)
 
-    pdf.output(report_file_path)
+    # Save PDF to a BytesIO buffer
+    pdf_buffer = io.BytesIO()
+    pdf.output(pdf_buffer)
+    pdf_buffer.seek(0)
+
+    # Upload PDF buffer to GCS
+    gcs_bucket = config.settings.GCS_BUCKET_NAME  # Ensure this is set in your config
+    gcs_blob_name = f"reports/{interview_id}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+    gcs_url = gcs.upload_file_to_gcs(
+        gcs_bucket, gcs_blob_name, pdf_buffer, content_type="application/pdf"
+    )
 
     stmt = (
         update(Interview)
@@ -820,7 +820,7 @@ async def generate_feedback(
                 "problemSolving"
             ],
             cultural_fit_score=interview_data["scoreBreakdown"]["culturalFit"],
-            report_file_url=f"{config.settings.URL}/{report_file_path}",
+            report_file_url=gcs_url,
         )
         .returning(
             Interview.id,
@@ -902,22 +902,27 @@ async def save_screenshot(request: Request, interview_id=Depends(authorize_candi
         if not data:
             raise HTTPException(status_code=400, detail="No screenshot data provided")
 
-        # Create directory if it doesn't exist
-        os.makedirs(
-            os.path.join("uploads", "screenshot", str(interview_id)), exist_ok=True
-        )
-
         # Generate filename with timestamp
         timestamp = int(time.time())
-        file_path = os.path.join(
-            "uploads", "screenshot", str(interview_id), f"{timestamp}.png"
+        gcs_bucket = (
+            config.settings.GCS_BUCKET_NAME
+        )  # Ensure this is set in your config
+        gcs_blob_name = f"screenshots/{interview_id}/{timestamp}.png"
+
+        # Save the screenshot to GCS
+        import io
+
+        screenshot_buffer = io.BytesIO(data)
+        screenshot_buffer.seek(0)
+        gcs_url = gcs.upload_file_to_gcs(
+            gcs_bucket, gcs_blob_name, screenshot_buffer, content_type="image/png"
         )
 
-        # Save the screenshot
-        with open(file_path, "wb") as f:
-            f.write(data)
-
-        return {"message": "Screenshot saved successfully", "timestamp": timestamp}
+        return {
+            "message": "Screenshot saved successfully",
+            "timestamp": timestamp,
+            "url": gcs_url,
+        }
     except Exception as e:
         raise HTTPException(
             status_code=500, detail=f"Failed to save screenshot: {str(e)}"
