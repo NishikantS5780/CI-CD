@@ -49,7 +49,8 @@ jobs:
             echo "MAIL_SENDER_EMAIL=${{ secrets.MAIL_SENDER_EMAIL }}" >> ./.env
             echo "OTP_EXPIRY_DURATION_SECONDS=${{ secrets.OTP_EXPIRY_DURATION_SECONDS }}" >> ./.env
             echo "GOOGLE_APPLICATION_CREDENTIALS=secrets/gcs_service_key.json" >> ./.env 
-            echo "${{ secrets.GCS_SERVICE_KEY }}" >> ./gcs_service_key.json
+            echo "${{ secrets.GCS_SERVICE_KEY }}" >> ./secrets/gcs_service_key.json
+            echo "GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }}" >> ./.env
             ./venv/bin/alembic upgrade head
             sudo systemctl restart gunicorn.service
           EOF
