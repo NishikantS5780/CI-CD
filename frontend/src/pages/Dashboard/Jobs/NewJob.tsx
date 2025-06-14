@@ -553,6 +553,11 @@ const NewJob = () => {
         { label: "", correct: false },
       ]);
       setQuizImageFile(null);
+      // Reset the file input
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
 
       toast.success("MCQ question saved successfully");
     } catch (error: any) {
@@ -1325,6 +1330,7 @@ const NewJob = () => {
                               size="sm"
                               onClick={() => {}} // IMPORTANT: TO BE HANDLED
                               className="text-destructive"
+                              style={{ display: 'none' }} // Hide the delete button
                             >
                               <Trash2 className="h-4 w-4 mr-2" />
                               Delete Question
@@ -1498,6 +1504,7 @@ const NewJob = () => {
                           size="sm"
                           onClick={() => {}} // IMPORTANT: TO BE HANDLED
                           className="text-destructive"
+                          style={{ display: 'none' }} // Hide the delete button
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete Question
